@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+	<title>Recipes Index</title>
+</head>
+
+<body>
+
+	<div>
+
+		<h1>Recipes</h1>
+
+		{% if recipe_list %}
+		<ul>
+			{% for recipe in recipe_list %}
+			<li>{{ recipe.name }}</li>
+			{% endfor %}
+		</ul>
+		{% else %}
+			No recipes currently in database.
+		{% endif %}
+		
+	</div>
+
+	<div>
+
+		<h1>Ingredients</h1>
+
+		{% if ingredients_list %}
+		<ul>
+			{% for ingredient in ingredients_list %}
+			<li>{{ ingredient.name }}</li>
+			{% endfor %}
+		</ul>
+		{% else %}
+			No ingredients currently in database.
+		{% endif %}
+
+	</div>
+
+</body>
+
+</html>
