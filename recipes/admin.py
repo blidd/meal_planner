@@ -3,8 +3,20 @@ from recipes.models import Recipe, Ingredient, Instruction, RecipeItem
 
 # Register your models here.
 
+class RecipeItemInline(admin.TabularInline):
+	model = RecipeItem
+
+
+class InstructionInline(admin.TabularInline):
+	model = Instruction
+
+
 class RecipeAdmin(admin.ModelAdmin):
-	pass
+	inlines = [
+		RecipeItemInline,
+		InstructionInline,
+	]
+	prepopulated_fields = {'slug': ('name',)}
 
 
 class IngredientAdmin(admin.ModelAdmin):
@@ -17,6 +29,9 @@ class InstructionAdmin(admin.ModelAdmin):
 
 class RecipeItemAdmin(admin.ModelAdmin):
 	pass
+
+
+
 
 
 admin.site.register(Recipe, RecipeAdmin)

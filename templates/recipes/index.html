@@ -15,7 +15,7 @@
 		{% if recipe_list %}
 		<ul>
 			{% for recipe in recipe_list %}
-			<li>{{ recipe.name }}</li>
+			<li><a href="/recipes/{{recipe.slug}}/">{{ recipe.name }}</a></li>
 			{% endfor %}
 		</ul>
 		{% else %}
@@ -38,6 +38,10 @@
 			No ingredients currently in database.
 		{% endif %}
 
+	</div>
+
+	<div>
+		<a href="/recipes/create_recipe/">Create Recipe</a>
 	</div>
 
 </body>

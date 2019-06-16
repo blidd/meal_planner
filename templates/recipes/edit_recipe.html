@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+	Edit - {{ recipe.name }} Recipe
+</head>
+
+<body>
+	<form method="post">
+		{% csrf_token %}
+
+		<h2>Ingredients</h2>
+		{{ recipeitem_formset.as_p }}
+
+		<h2>Instructions</h2>
+		{{ instruction_formset.as_p }}
+		
+		<input type="submit" value="Submit">
+	</form>
+</body>
+
+</html>

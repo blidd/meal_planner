@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+	<title>
+		{% if recipe %}
+		{{ recipe.name }}
+		{% else %}
+		no recipe.
+		{% endif %}
+	</title>
+</head>
+
+<body>
+	
+	<h1>{{ recipe.name }}</h1>
+
+	<div>
+
+		<h2>Ingredients</h2>
+
+		{% if recipe_items %}
+		<ul>
+			{% for ingredient in recipe_items %}
+			<li>{{ ingredient.name }}</li>
+			{% endfor %}
+		</ul>
+		{% else %}
+		<strong>No ingredients.</strong>
+		{% endif %}
+
+		<h2>Instructions</h2>
+
+		{% if instructions %}
+		<ul>
+			{% for instruction in instructions %}
+			<li>
+				{{ instruction.step_num }}: {{ instruction.text }}
+			</li>
+			{% endfor %}
+		</ul>
+		{% else %}
+		<strong>No instructions.</strong>
+		{% endif %}
+
+	</div>
+
+	<div>
+		<a href="/recipes/{{ recipe.slug }}/edit_recipe">
+			<button type="submit">Edit</button>
+		</a>
+
+
+</body>
+
+</html>

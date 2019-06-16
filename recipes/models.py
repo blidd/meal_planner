@@ -1,4 +1,5 @@
 from django.db import models
+from django.template.defaultfilters import slugify
 
 
 class Ingredient(models.Model):
@@ -34,14 +35,20 @@ class Recipe(models.Model):
 	name = models.CharField(max_length=50, unique=True)
 	likes = models.IntegerField(default=0)
 	cuisine = models.CharField(max_length=50, default='world')
-	ingredients = models.ManyToManyField(Ingredient)
+	slug = models.SlugField(unique=True)
 	
-
 	class Meta:
 		ordering = ('name',)
 
 	def __str__(self):
 		return self.name
+
+	def get_absolute_url(self):
+		return reverse('add-recipe')
+
+	def save(self, *args, **kwargs):
+		self.slug = slugify(self.name)
+		super().save(*args, **kwargs)
 
 
 class RecipeItem(models.Model):
@@ -63,14 +70,16 @@ class RecipeItem(models.Model):
 		choices=MEASUREMENT_UNITS,
 		default='NA')
 
+	# each recipe item maps to only ONE ingredient
 	ingredient_name = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
-	recipe_name = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+	# each recipe item maps to only ONE recipe
+	recipe_name = models.ForeignKey(Recipe, null=True, on_delete=models.CASCADE)
 
 	def __str__(self):
 		return "%d %s of %s" % (self.qty, self.unit, self.recipe_name)
 
 	class Meta:
-		verbose_name = 'Recipe Ingredient'
+		verbose_name = 'Recipe Item'
 
 
 class Instruction(models.Model):
