@@ -31,9 +31,6 @@ class RecipeItemAdmin(admin.ModelAdmin):
 	pass
 
 
-
-
-
 admin.site.register(Recipe, RecipeAdmin)
 admin.site.register(Ingredient, IngredientAdmin)
 admin.site.register(Instruction, InstructionAdmin)

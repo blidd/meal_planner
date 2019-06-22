@@ -121,3 +121,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# The page users are redirected to after successfully logging in
+LOGIN_REDIRECT_URL = '/'
+
+# allows sent emails to be logged to the console
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+

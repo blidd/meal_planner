@@ -1,11 +1,6 @@
-<!DOCTYPE html>
+{% extends "base_generic.html" %}
 
-<html>
-
-<head>
-	<title>Recipes Index</title>
-</head>
-
+{% block content %}
 <body>
 
 	<div>
@@ -44,6 +39,9 @@
 		<a href="/recipes/create_recipe/">Create Recipe</a>
 	</div>
 
-</body>
+	<div>
+		<a href="/accounts/login">Login</a>
+	</div>
 
-</html>
+</body>
+{% endblock %}

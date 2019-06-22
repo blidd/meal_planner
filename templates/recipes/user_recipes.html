@@ -1,0 +1,20 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+<h1>Your Recipes</h1>
+
+{% if user_recipe_list %}
+<ul>
+	{% for recipe in user_recipe_list %}
+	<li><a href="/recipes/{{ recipe.slug }}/">{{ recipe.name }}</a></li>
+	{% endfor %}
+</ul>
+
+{% else %}
+<p>
+	You haven't selected any recipes. <a href="/">Check out recipes here</a>
+</p>
+{% endif %}
+
+{% endblock %}

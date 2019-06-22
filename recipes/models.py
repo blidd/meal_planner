@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 
 
@@ -36,6 +37,7 @@ class Recipe(models.Model):
 	likes = models.IntegerField(default=0)
 	cuisine = models.CharField(max_length=50, default='world')
 	slug = models.SlugField(unique=True)
+	users = models.ManyToManyField(User, related_name='recipes')
 	
 	class Meta:
 		ordering = ('name',)

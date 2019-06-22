@@ -3,12 +3,14 @@ from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView
 # from django.views.generic.edit import CreateView
 from django.forms import inlineformset_factory
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from recipes.models import Recipe, RecipeItem, Ingredient, Instruction
 
 from .forms import RecipeForm
 
 
-class RecipeIndex(ListView):
+class RecipeIndexView(ListView):
 	model = Recipe
 	template_name = 'recipes/index.html'
 	context_object_name = 'recipe_list' # same as default, but made explicit for greater clarity
@@ -19,8 +21,18 @@ class RecipeIndex(ListView):
 		return context
 
 
-def create_recipe(request):
+class UserRecipesIndexView(LoginRequiredMixin, ListView):
+	'''Generic class-based view that lists all recipes chosen by a user.'''
+	model = Recipe
+	template_name = 'recipes/user_recipes.html'
+	context_object_name = 'user_recipe_list'
 
+	def get_queryset(self):
+		print(self.request.user.username)
+		return Recipe.objects.filter(users=self.request.user)
+
+
+def create_recipe(request):
 	if request.method == 'POST':
 		form = RecipeForm(request.POST)
 
@@ -32,6 +44,7 @@ def create_recipe(request):
 	return render(request, 'recipes/create_recipe.html', context={'form': form})
 
 
+@login_required
 def edit_recipe(request, recipe_name_slug):
 	recipe = Recipe.objects.get(slug=recipe_name_slug)
 	RecipeItemFormset = inlineformset_factory(Recipe, RecipeItem, fields=('name','qty','unit','ingredient_name'), extra=10)
