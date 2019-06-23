@@ -25,11 +25,11 @@ class Ingredient(models.Model):
 		choices=SEASONALITY_CHOICES, 
 		default=ALL_SEASONS)
 
-	class Meta:
-		ordering = ('name',)
-
 	def __str__(self):
 		return self.name
+
+	class Meta:
+		ordering = ('name',)
 
 
 class Recipe(models.Model):
@@ -39,11 +39,16 @@ class Recipe(models.Model):
 	slug = models.SlugField(unique=True)
 
 	# owner = models.OneToOneField(User, on_delete=models.CASCADE, related_name='recipe')
-	users = models.ManyToManyField(User, related_name='recipes')
-
 	
-	class Meta:
-		ordering = ('name',)
+	ingredients = models.ManyToManyField(
+		Ingredient, 
+		through='RecipeItem', 
+		related_name='recipes')
+
+	users = models.ManyToManyField(
+		User, 
+		through='UserRecipe', 
+		related_name='recipes')
 
 	def __str__(self):
 		return self.name
@@ -55,8 +60,23 @@ class Recipe(models.Model):
 		self.slug = slugify(self.name)
 		super().save(*args, **kwargs)
 
+	class Meta:
+		ordering = ('name',)
+
+
+class Instruction(models.Model):
+	step_num = models.IntegerField()
+	text = models.TextField()
+	recipe_name = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+
+	def __str__(self):
+		return '%s recipe: step #%d' % (self.recipe_name, self.step_num)
+
 
 class RecipeItem(models.Model):
+	'''
+	Custom "through" model between Recipe and Ingredient models.
+	'''
 
 	MEASUREMENT_UNITS = [
 		('CUP', 'Cups'),
@@ -75,26 +95,47 @@ class RecipeItem(models.Model):
 		choices=MEASUREMENT_UNITS,
 		default='NA')
 
-	# each recipe item maps to only ONE ingredient
-	ingredient_name = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
-	# each recipe item maps to only ONE recipe
-	recipe_name = models.ForeignKey(Recipe, null=True, on_delete=models.CASCADE)
+	ingredient_name = models.ForeignKey(
+		Ingredient, 
+		related_name='recipe_items', 
+		on_delete=models.SET_NULL, 
+		null=True, 
+		blank=True)
+
+	recipe_name = models.ForeignKey(
+		Recipe,
+		related_name='recipe_items', 
+		on_delete=models.CASCADE)
 
 	def __str__(self):
-		return "%d %s of %s" % (self.qty, self.unit, self.recipe_name)
+		return "%d %s of %s" % (self.qty, self.unit, self.name)
 
 	class Meta:
 		verbose_name = 'Recipe Item'
 
 
-class Instruction(models.Model):
-	step_num = models.IntegerField()
-	text = models.TextField()
-	recipe_name = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+class UserRecipe(models.Model):
+	'''
+	Custom "through" model between Recipe and Ingredient models. Allows user
+	to specify a meal for which to make the selected recipe.
+	'''
 
-	def __str__(self):
-		return '%s recipe: step #%d' % (self.recipe_name, self.step_num)
+	MEAL_TIMES = [
+		('BR', 'Breakfast'),
+		('LU', 'Lunch'),
+		('DI', 'Dinner'),
+	]
 
+	meal_time = models.CharField(max_length=30, choices=MEAL_TIMES, default="")
+	meal_date = models.DateField(auto_now_add=True)
 
+	user = models.ForeignKey(
+		User, 
+		related_name='user_recipe', 
+		on_delete=models.CASCADE)
+
+	recipe = models.ForeignKey(Recipe,
+		related_name='user_recipe',
+		on_delete=models.CASCADE)
 
 

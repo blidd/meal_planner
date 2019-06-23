@@ -1,13 +1,11 @@
 from django.shortcuts import render, redirect
-# from django.http import HttpResponseRedirect
 from django.views.generic import ListView, DetailView
-# from django.views.generic.edit import CreateView
 from django.forms import inlineformset_factory
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from recipes.models import Recipe, RecipeItem, Ingredient, Instruction
 
-from .forms import RecipeForm
+from recipes.models import Recipe, RecipeItem, Ingredient, Instruction
+from recipes.forms import RecipeForm
 
 
 class RecipeIndexView(ListView):
@@ -22,7 +20,10 @@ class RecipeIndexView(ListView):
 
 
 class UserRecipesIndexView(LoginRequiredMixin, ListView):
-	'''Generic class-based view that lists all recipes chosen by a user.'''
+	'''
+	Generic class-based view that lists all recipes chosen by a user.
+	'''
+
 	model = Recipe
 	template_name = 'recipes/user_recipes.html'
 	context_object_name = 'user_recipe_list'
