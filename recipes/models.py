@@ -37,7 +37,10 @@ class Recipe(models.Model):
 	likes = models.IntegerField(default=0)
 	cuisine = models.CharField(max_length=50, default='world')
 	slug = models.SlugField(unique=True)
+
+	# owner = models.OneToOneField(User, on_delete=models.CASCADE, related_name='recipe')
 	users = models.ManyToManyField(User, related_name='recipes')
+
 	
 	class Meta:
 		ordering = ('name',)
