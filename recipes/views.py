@@ -4,7 +4,7 @@ from django.forms import inlineformset_factory
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from recipes.models import Recipe, RecipeItem, Ingredient, Instruction
+from recipes.models import Recipe, RecipeItem, Ingredient, Instruction, UserRecipe
 from recipes.forms import RecipeForm
 
 
@@ -20,17 +20,14 @@ class RecipeIndexView(ListView):
 
 
 class UserRecipesIndexView(LoginRequiredMixin, ListView):
-	'''
-	Generic class-based view that lists all recipes chosen by a user.
-	'''
+	'''Generic class-based view that lists all recipes chosen by a user.'''
 
-	model = Recipe
+	model = UserRecipe
 	template_name = 'recipes/user_recipes.html'
 	context_object_name = 'user_recipe_list'
 
 	def get_queryset(self):
-		print(self.request.user.username)
-		return Recipe.objects.filter(users=self.request.user)
+		return UserRecipe.objects.filter(user=self.request.user)
 
 
 def create_recipe(request):

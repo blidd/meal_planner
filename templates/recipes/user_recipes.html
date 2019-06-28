@@ -6,8 +6,12 @@
 
 {% if user_recipe_list %}
 <ul>
-	{% for recipe in user_recipe_list %}
-	<li><a href="/recipes/{{ recipe.slug }}/">{{ recipe.name }}</a></li>
+	{% for user_recipe in user_recipe_list %}
+	<li>
+		<a href="/recipes/{{ user_recipe.recipe.slug }}/">{{ user_recipe.recipe.name }}</a><br />
+		<b>Meal time: {{ user_recipe.meal_date }}, {{ user_recipe.meal_time }}</b>
+	</li>
+
 	{% endfor %}
 </ul>
 

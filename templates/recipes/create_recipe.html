@@ -1,10 +1,6 @@
-<!DOCTYPE html>
+{% extends "base_generic.html" %}
 
-<html>
-
-<head>
-
-</head>
+{% block content %}
 
 <body>
 
@@ -12,9 +8,10 @@
 
 	<form method="post">
 		{% csrf_token %}
-		{{ form }}
-		<input type="submit" value="Create Recipe">
+		{{ form.as_p }}
+		<input type="submit" value="Fill out recipe details">
 	</form>
+	
 </body>
 
-</html>
+{% endblock %}

@@ -1,16 +1,6 @@
-<!DOCTYPE html>
+{% extends "base_generic.html" %}
 
-<html>
-
-<head>
-	<title>
-		{% if recipe %}
-		{{ recipe.name }}
-		{% else %}
-		no recipe.
-		{% endif %}
-	</title>
-</head>
+{% block content %}
 
 <body>
 	
@@ -51,7 +41,6 @@
 			<button type="submit">Edit</button>
 		</a>
 
-
 </body>
 
-</html>
+{% endblock %}

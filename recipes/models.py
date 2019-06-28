@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
+import datetime
 
 
 class Ingredient(models.Model):
@@ -48,7 +49,8 @@ class Recipe(models.Model):
 	users = models.ManyToManyField(
 		User, 
 		through='UserRecipe', 
-		related_name='recipes')
+		related_name='recipes',
+		blank=True)
 
 	def __str__(self):
 		return self.name
@@ -74,9 +76,9 @@ class Instruction(models.Model):
 
 
 class RecipeItem(models.Model):
-	'''
+	"""
 	Custom "through" model between Recipe and Ingredient models.
-	'''
+	"""
 
 	MEASUREMENT_UNITS = [
 		('CUP', 'Cups'),
@@ -88,37 +90,36 @@ class RecipeItem(models.Model):
 	]
 
 	id = models.AutoField(primary_key=True)
-	name = models.CharField(max_length=50)
-	qty = models.IntegerField()
+	qty = models.IntegerField(default=0)
 	unit = models.CharField(
 		max_length=30,
 		choices=MEASUREMENT_UNITS,
 		default='NA')
 
-	ingredient_name = models.ForeignKey(
+	ingredient = models.ForeignKey(
 		Ingredient, 
 		related_name='recipe_items', 
 		on_delete=models.SET_NULL, 
 		null=True, 
 		blank=True)
 
-	recipe_name = models.ForeignKey(
+	recipe = models.ForeignKey(
 		Recipe,
 		related_name='recipe_items', 
 		on_delete=models.CASCADE)
 
 	def __str__(self):
-		return "%d %s of %s" % (self.qty, self.unit, self.name)
+		return "%d %s of %s" % (self.qty, self.unit, self.ingredient.name)
 
 	class Meta:
 		verbose_name = 'Recipe Item'
 
 
 class UserRecipe(models.Model):
-	'''
+	"""
 	Custom "through" model between Recipe and Ingredient models. Allows user
 	to specify a meal for which to make the selected recipe.
-	'''
+	"""
 
 	MEAL_TIMES = [
 		('BR', 'Breakfast'),
@@ -127,15 +128,18 @@ class UserRecipe(models.Model):
 	]
 
 	meal_time = models.CharField(max_length=30, choices=MEAL_TIMES, default="")
-	meal_date = models.DateField(auto_now_add=True)
+	meal_date = models.DateField(default=datetime.date.today)
 
 	user = models.ForeignKey(
 		User, 
 		related_name='user_recipe', 
 		on_delete=models.CASCADE)
 
-	recipe = models.ForeignKey(Recipe,
+	recipe = models.ForeignKey(
+		Recipe,
 		related_name='user_recipe',
 		on_delete=models.CASCADE)
 
+	def __str__(self):
+		return "%s saved: %s recipe" % (self.user, self.recipe)
 
