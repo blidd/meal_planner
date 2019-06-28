@@ -24,7 +24,7 @@ class UserRecipesIndexView(LoginRequiredMixin, ListView):
 
 	model = UserRecipe
 	template_name = 'recipes/user_recipes.html'
-	context_object_name = 'user_recipe_list'
+	context_object_name = 'user_recipes_list'
 
 	def get_queryset(self):
 		return UserRecipe.objects.filter(user=self.request.user)
@@ -69,7 +69,7 @@ def show_recipe(request, recipe_name_slug):
 
 	try:
 		recipe = Recipe.objects.get(slug=recipe_name_slug)
-		recipe_items = RecipeItem.objects.filter(recipe_name=recipe)
+		recipe_items = RecipeItem.objects.filter(recipe=recipe)
 		instructions = Instruction.objects.filter(recipe_name=recipe)
 		context_dict['recipe'] = recipe
 		context_dict['recipe_items'] = recipe_items

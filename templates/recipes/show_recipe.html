@@ -12,8 +12,8 @@
 
 		{% if recipe_items %}
 		<ul>
-			{% for ingredient in recipe_items %}
-			<li>{{ ingredient.name }}</li>
+			{% for item in recipe_items %}
+			<li>{{ item.ingredient.name }}</li>
 			{% endfor %}
 		</ul>
 		{% else %}

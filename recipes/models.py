@@ -125,9 +125,10 @@ class UserRecipe(models.Model):
 		('BR', 'Breakfast'),
 		('LU', 'Lunch'),
 		('DI', 'Dinner'),
+		('NA', 'Not specified')
 	]
 
-	meal_time = models.CharField(max_length=30, choices=MEAL_TIMES, default="")
+	meal_time = models.CharField(max_length=30, choices=MEAL_TIMES, default='NA')
 	meal_date = models.DateField(default=datetime.date.today)
 
 	user = models.ForeignKey(
