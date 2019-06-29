@@ -13,7 +13,7 @@
 		{% if recipe_items %}
 		<ul>
 			{% for item in recipe_items %}
-			<li>{{ item.ingredient.name }}</li>
+			<li>{{ item.qty }} of {{ item.ingredient.name }}</li>
 			{% endfor %}
 		</ul>
 		{% else %}
@@ -38,8 +38,16 @@
 
 	<div>
 		<a href="/recipes/{{ recipe.slug }}/edit_recipe">
-			<button type="submit">Edit</button>
+			<button type="submit">Edit this recipe</button>
 		</a>
+
+		<br />
+		<br />
+
+		<a href="/recipes/{{ recipe.slug }}/save_recipe">
+			<button type="submit">Add this recipe to your meal plan</button>
+		</a>
+	</div>
 
 </body>
 

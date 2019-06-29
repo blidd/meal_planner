@@ -3,6 +3,7 @@ from django.views.generic import ListView, DetailView
 from django.forms import inlineformset_factory
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 
 from recipes.models import Recipe, RecipeItem, Ingredient, Instruction, UserRecipe
 from recipes.forms import RecipeForm
@@ -19,15 +20,25 @@ class RecipeIndexView(ListView):
 		return context
 
 
-class UserRecipesIndexView(LoginRequiredMixin, ListView):
-	'''Generic class-based view that lists all recipes chosen by a user.'''
+class UserProfileView(LoginRequiredMixin, DetailView):
+	model = User
+	template_name = 'user/user_profile.html'
 
-	model = UserRecipe
-	template_name = 'recipes/user_recipes.html'
-	context_object_name = 'user_recipes_list'
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		user_recipes = UserRecipe.objects.filter(user=self.request.user)
 
-	def get_queryset(self):
-		return UserRecipe.objects.filter(user=self.request.user)
+		groceries = {}
+		recipe_items = [item for recipe in Recipe.objects.filter(users=self.request.user) 
+							 for item in RecipeItem.objects.filter(recipe=recipe)]
+		for item in recipe_items:
+			groceries[item.ingredient.name] = groceries.get(item.ingredient.name, 0) + item.qty
+
+		context['user_recipes'] = user_recipes
+		context['groceries'] = groceries
+		context['user'] = self.request.user
+		context['permission'] = self.request.user == kwargs['object']
+		return context
 
 
 def create_recipe(request):
@@ -45,7 +56,7 @@ def create_recipe(request):
 @login_required
 def edit_recipe(request, recipe_name_slug):
 	recipe = Recipe.objects.get(slug=recipe_name_slug)
-	RecipeItemFormset = inlineformset_factory(Recipe, RecipeItem, fields=('name','qty','unit','ingredient_name'), extra=10)
+	RecipeItemFormset = inlineformset_factory(Recipe, RecipeItem, fields=('qty','unit','ingredient'), extra=5)
 	InstructionFormset = inlineformset_factory(Recipe, Instruction, fields=('step_num', 'text'), extra=5)
 
 	if request.method == 'POST':
@@ -60,27 +71,69 @@ def edit_recipe(request, recipe_name_slug):
 	recipeitem_formset = RecipeItemFormset(instance=recipe)
 	instruction_formset = InstructionFormset(instance=recipe)
 
-	context_dict = {'recipeitem_formset': recipeitem_formset, 'instruction_formset': instruction_formset}
+	context_dict = {
+		'recipeitem_formset': recipeitem_formset, 
+		'instruction_formset': instruction_formset,
+	}
+
 	return render(request, 'recipes/edit_recipe.html', context=context_dict)
 
 
 def show_recipe(request, recipe_name_slug):
-	context_dict = {}
 
 	try:
 		recipe = Recipe.objects.get(slug=recipe_name_slug)
 		recipe_items = RecipeItem.objects.filter(recipe=recipe)
 		instructions = Instruction.objects.filter(recipe_name=recipe)
-		context_dict['recipe'] = recipe
-		context_dict['recipe_items'] = recipe_items
-		context_dict['instructions'] = instructions
+		context_dict = {
+			'recipe': recipe,
+			'recipe_item': recipe_items,
+			'instructions': instructions,
+		}
 
 	except Recipe.DoesNotExist:
-		context_dict['recipe'] = None
-		context_dict['recipe_items'] = None
-		context_dict['instructions'] = None
+		context_dict = {
+			'recipe': None,
+			'recipe_item': None,
+			'instructions': None,
+		}
 
 	return render(request, 'recipes/show_recipe.html', context=context_dict)
+
+
+@login_required
+def save_recipe(request, recipe_name_slug):
+	recipe = Recipe.objects.get(slug=recipe_name_slug)
+	UserRecipeFormset = inlineformset_factory(Recipe, UserRecipe, fields=('meal_time', 'meal_date'), extra=2)
+	userrecipe_formset = UserRecipeFormset(instance=recipe)
+
+	if request.method == 'POST':
+		userrecipe_formset = UserRecipeFormset(request.POST, instance=recipe)
+
+		if userrecipe_formset.is_valid():
+			userrecipe = userrecipe_formset.save(commit=False)
+			userrecipe.user = request.user
+			userrecipe.save()
+
+			return redirect('index')
+
+	context_dict = {
+		'recipe': recipe,
+		'userrecipe_formset': userrecipe_formset,
+	}
+
+	return render(request, 'recipes/save_recipe.html', context=context_dict)
+
+
+# class UserRecipesIndexView(LoginRequiredMixin, ListView):
+# 	"""Generic class-based view that lists all recipes chosen by a user."""
+
+# 	model = UserRecipe
+# 	template_name = 'user/user_recipes.html'
+# 	context_object_name = 'user_recipes_list'
+
+# 	def get_queryset(self):
+# 		return UserRecipe.objects.filter(user=self.request.user)
 
 
 # class RecipeCreate(CreateView):

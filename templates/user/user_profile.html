@@ -1,0 +1,41 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+{% if permission %}
+
+<h1>My Profile</h1>
+
+<div>
+
+	<h3>My Meal Plan</h3>
+
+	<ul>
+		{% for user_recipe in user_recipes %}
+		<li>
+			<a href="/recipes/{{ user_recipe.recipe.slug }}/">{{ user_recipe.recipe.name }}</a><br />
+			<b>Meal time: {{ user_recipe.meal_date }}, {{ user_recipe.meal_time }}</b>
+		</li>
+		{% endfor %}
+	</ul>
+
+</div>
+
+<div>
+	<h3>This week's groceries</h3>
+
+	{% for name, qty in groceries.items %}
+	<ul>
+		<li>{{ qty }} of {{ name }}</li>
+	</ul>
+	{% endfor %}
+
+</div>
+
+{% else %}
+
+Not your profile!
+
+{% endif %}
+
+{% endblock %}

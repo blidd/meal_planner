@@ -1,6 +1,6 @@
 from django import forms
 # from django.forms import inlineformset_factory
-from recipes.models import Recipe, RecipeItem
+from recipes.models import Recipe, RecipeItem, UserRecipe
 
 
 class RecipeForm(forms.ModelForm):
@@ -14,7 +14,14 @@ class RecipeItemForm(forms.ModelForm):
 
 	class Meta:
 		model = RecipeItem
-		exclude = ()
+		fields = '__all__'
+
+
+# class UserRecipeForm(forms.ModelForm):
+
+# 	class Meta:
+# 		model = UserRecipe
+# 		exclude = ('recipe')
 
 
 # RecipeItemInlineFormSet = inlineformset_factory(Recipe, RecipeItem, form=RecipeItemForm, extra=3)

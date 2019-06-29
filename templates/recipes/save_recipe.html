@@ -1,0 +1,13 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+<h1>Save {{ recipe.name }} to Your Meal Plan</h1>
+
+<form method='post'>
+	{% csrf_token %}
+	{{ userrecipe_formset.as_p }}
+	<input type="submit" value="Add recipe to meal plan">
+</form>
+
+{% endblock %}
