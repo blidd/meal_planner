@@ -20,24 +20,28 @@ class RecipeIndexView(ListView):
 		return context
 
 
-class UserProfileView(LoginRequiredMixin, DetailView):
+class UserProfileView(LoginRequiredMixin, ListView):
 	model = User
 	template_name = 'user/user_profile.html'
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		user_recipes = UserRecipe.objects.filter(user=self.request.user)
+		user_recipes = UserRecipe.objects.filter(user=self.request.user).order_by('meal_date', 'meal_time')
 
-		groceries = {}
-		recipe_items = [item for recipe in Recipe.objects.filter(users=self.request.user) 
-							 for item in RecipeItem.objects.filter(recipe=recipe)]
+		recipe_items = [
+			item for recipe in Recipe.objects.filter(users=self.request.user) 
+				 for item in RecipeItem.objects.filter(recipe=recipe)]
+		
+		groceries = {}				 
 		for item in recipe_items:
 			groceries[item.ingredient.name] = groceries.get(item.ingredient.name, 0) + item.qty
 
-		context['user_recipes'] = user_recipes
-		context['groceries'] = groceries
-		context['user'] = self.request.user
-		context['permission'] = self.request.user == kwargs['object']
+		context = {
+			'user_recipes': user_recipes,
+			'groceries': groceries,
+			'user': self.request.user,
+		}
+
 		return context
 
 
@@ -87,14 +91,14 @@ def show_recipe(request, recipe_name_slug):
 		instructions = Instruction.objects.filter(recipe_name=recipe)
 		context_dict = {
 			'recipe': recipe,
-			'recipe_item': recipe_items,
+			'recipe_items': recipe_items,
 			'instructions': instructions,
 		}
 
 	except Recipe.DoesNotExist:
 		context_dict = {
 			'recipe': None,
-			'recipe_item': None,
+			'recipe_items': None,
 			'instructions': None,
 		}
 
@@ -104,16 +108,17 @@ def show_recipe(request, recipe_name_slug):
 @login_required
 def save_recipe(request, recipe_name_slug):
 	recipe = Recipe.objects.get(slug=recipe_name_slug)
-	UserRecipeFormset = inlineformset_factory(Recipe, UserRecipe, fields=('meal_time', 'meal_date'), extra=2)
+	UserRecipeFormset = inlineformset_factory(Recipe, UserRecipe, fields=('meal_time', 'meal_date'), extra=0)
 	userrecipe_formset = UserRecipeFormset(instance=recipe)
 
 	if request.method == 'POST':
 		userrecipe_formset = UserRecipeFormset(request.POST, instance=recipe)
 
 		if userrecipe_formset.is_valid():
-			userrecipe = userrecipe_formset.save(commit=False)
-			userrecipe.user = request.user
-			userrecipe.save()
+			added_user_recipes = userrecipe_formset.save(commit=False)
+			for user_recipe in added_user_recipes:
+				user_recipe.user = request.user
+				user_recipe.save()
 
 			return redirect('index')
 

@@ -2,8 +2,6 @@
 
 {% block content %}
 
-{% if permission %}
-
 <h1>My Profile</h1>
 
 <div>
@@ -31,11 +29,5 @@
 	{% endfor %}
 
 </div>
-
-{% else %}
-
-Not your profile!
-
-{% endif %}
 
 {% endblock %}

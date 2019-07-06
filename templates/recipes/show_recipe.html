@@ -13,7 +13,7 @@
 		{% if recipe_items %}
 		<ul>
 			{% for item in recipe_items %}
-			<li>{{ item.qty }} of {{ item.ingredient.name }}</li>
+			<li>{{ item.qty }} {{ item.unit }} of {{ item.ingredient.name }}</li>
 			{% endfor %}
 		</ul>
 		{% else %}

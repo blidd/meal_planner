@@ -38,8 +38,6 @@ class Recipe(models.Model):
 	likes = models.IntegerField(default=0)
 	cuisine = models.CharField(max_length=50, default='world')
 	slug = models.SlugField(unique=True)
-
-	# owner = models.OneToOneField(User, on_delete=models.CASCADE, related_name='recipe')
 	
 	ingredients = models.ManyToManyField(
 		Ingredient, 

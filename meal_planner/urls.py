@@ -23,7 +23,7 @@ from recipes import views
 
 urlpatterns = [
     path('', views.RecipeIndexView.as_view(), name='index'),
-    path('users/<int:pk>/', views.UserProfileView.as_view(), name='user_profile'),
+    path('users/my_profile/', views.UserProfileView.as_view(), name='user_profile'),
     path('admin/', django.contrib.admin.site.urls),
     path('recipes/', include('recipes.urls')),
     path('accounts/', include('django.contrib.auth.urls')),

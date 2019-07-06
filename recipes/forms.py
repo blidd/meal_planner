@@ -17,11 +17,4 @@ class RecipeItemForm(forms.ModelForm):
 		fields = '__all__'
 
 
-# class UserRecipeForm(forms.ModelForm):
-
-# 	class Meta:
-# 		model = UserRecipe
-# 		exclude = ('recipe')
-
-
 # RecipeItemInlineFormSet = inlineformset_factory(Recipe, RecipeItem, form=RecipeItemForm, extra=3)
