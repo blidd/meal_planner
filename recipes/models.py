@@ -79,16 +79,29 @@ class RecipeItem(models.Model):
 	"""
 
 	MEASUREMENT_UNITS = [
-		('CUP', 'Cups'),
+
+		# Volume measurements
 		('TSP', 'Teaspoons'),
 		('TBSP', 'Tablespoons'),
-		('PCS', 'Pieces'),
+		('CUP', 'Cups'),
+		('PINT', 'Pint'),
+		('QRT', 'Quart'),
+		('GAL', 'Gallon'),
+
+		# Mass measurements
+		('OZ', 'Ounces'),
 		('LBS', 'Pounds'),
+		('G', 'Grams'),
+		('KG', 'Kilograms'),
+
+		# Miscellaneous
+		('PCS', 'Pieces'),
 		('NA', 'None'),
 	]
 
 	id = models.AutoField(primary_key=True)
-	qty = models.IntegerField(default=0)
+	qty = models.FloatField(default=0)
+	description = models.CharField(max_length=100, blank=True, default="")
 	unit = models.CharField(
 		max_length=30,
 		choices=MEASUREMENT_UNITS,
@@ -109,8 +122,48 @@ class RecipeItem(models.Model):
 	def __str__(self):
 		return "%d %s of %s" % (self.qty, self.unit, self.ingredient.name)
 
+	@staticmethod
+	def standardize_units(amt, unit):
+
+		std_amt = 0
+		std_unit = None
+		
+		# Standardizes to CUPS
+		if unit == 'TSP':
+			std_amt = amt / 48
+			std_unit = 'CUPS'
+		elif unit == 'TBSP':
+			std_amt = amt / 16
+			std_unit = 'CUPS'
+		elif unit == 'PINT':
+			std_amt = amt * 2
+			std_unit = 'CUPS'
+		elif unit == 'QRT':
+			std_amt = amt * 4
+			std_unit = 'CUPS'
+		elif unit == 'GAL':
+			std_amt = amt * 16
+			std_unit = 'CUPS'
+
+		# Standardizes to LBS
+		elif unit == 'OZ':
+			std_amt = amt / 16
+			std_unit = 'LBS'
+		elif unit == 'G':
+			std_amt = amt / 453.592
+			std_unit = 'LBS'
+		elif unit == 'KG':
+			std_amt = amt * 2.20462
+			std_unit = 'LBS'
+
+		else:
+			std_amt = amt
+			std_unit = unit
+
+		return std_amt, std_unit
+
 	class Meta:
-		verbose_name = 'Recipe Item'
+		verbose_name = 'Recipe item'
 
 
 class UserRecipe(models.Model):

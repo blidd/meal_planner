@@ -1,0 +1,13 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+<p>Are you sure you want to delete {{ user_recipe.recipe.name }} from your meal plan?</p>
+
+<form method="post">
+	{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Delete">
+</form>
+
+{% endblock %}

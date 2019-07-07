@@ -17,4 +17,11 @@ class RecipeItemForm(forms.ModelForm):
 		fields = '__all__'
 
 
+class UserRecipeForm(forms.ModelForm):
+
+	class Meta:
+		model = UserRecipe
+		fields = '__all__'
+
+
 # RecipeItemInlineFormSet = inlineformset_factory(Recipe, RecipeItem, form=RecipeItemForm, extra=3)

@@ -23,7 +23,12 @@ from recipes import views
 
 urlpatterns = [
     path('', views.RecipeIndexView.as_view(), name='index'),
+
     path('users/my_profile/', views.UserProfileView.as_view(), name='user_profile'),
+    path('users/my_profile/my_recipes', views.UserRecipesDisplay.as_view(), name='my_recipes'),
+    path('users/my_profile/my_recipes/update/<int:pk>', views.UserRecipesUpdate.as_view(), name='update_recipe'),
+    path('users/my_profile/my_recipes/delete/<int:pk>', views.UserRecipesDelete.as_view(), name='delete_recipe'),
+
     path('admin/', django.contrib.admin.site.urls),
     path('recipes/', include('recipes.urls')),
     path('accounts/', include('django.contrib.auth.urls')),

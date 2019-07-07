@@ -2,11 +2,12 @@
 
 {% block content %}
 
-<h1>Save {{ recipe.name }} to Your Meal Plan</h1>
+<h3>Save {{ recipe.name }} to Your Meal Plan</h3>
 
-<form method='post'>
+<form method="post">
 	{% csrf_token %}
 	{{ userrecipe_formset.as_p }}
+
 	<input type="submit" value="Add recipe to meal plan">
 </form>
 

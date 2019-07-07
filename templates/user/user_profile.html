@@ -12,19 +12,23 @@
 		{% for user_recipe in user_recipes %}
 		<li>
 			<a href="/recipes/{{ user_recipe.recipe.slug }}/">{{ user_recipe.recipe.name }}</a><br />
-			<b>Meal time: {{ user_recipe.meal_date }}, {{ user_recipe.meal_time }}</b>
+			<b>Meal time: {{ user_recipe.meal_date }}, {{ user_recipe.meal_time }}</b><br />
 		</li>
 		{% endfor %}
 	</ul>
+
+	<a href="/users/my_profile/my_recipes">
+		<button type="submit">Manage Meal Plan</button>
+	</a>
 
 </div>
 
 <div>
 	<h3>This week's groceries</h3>
 
-	{% for name, qty in groceries.items %}
+	{% for name, qty_and_unit in groceries.items %}
 	<ul>
-		<li>{{ qty }} of {{ name }}</li>
+		<li>{{ qty_and_unit.0 }} {{ qty_and_unit.1 }} of {{ name }}</li>
 	</ul>
 	{% endfor %}
 

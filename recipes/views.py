@@ -1,12 +1,14 @@
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView
+from django.views.generic.edit import UpdateView, DeleteView
 from django.forms import inlineformset_factory
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
+from django.urls import reverse_lazy
 
 from recipes.models import Recipe, RecipeItem, Ingredient, Instruction, UserRecipe
-from recipes.forms import RecipeForm
+from recipes.forms import RecipeForm, UserRecipeForm
 
 
 class RecipeIndexView(ListView):
@@ -32,9 +34,11 @@ class UserProfileView(LoginRequiredMixin, ListView):
 			item for recipe in Recipe.objects.filter(users=self.request.user) 
 				 for item in RecipeItem.objects.filter(recipe=recipe)]
 		
-		groceries = {}				 
+		groceries = {}
 		for item in recipe_items:
-			groceries[item.ingredient.name] = groceries.get(item.ingredient.name, 0) + item.qty
+			name = item.ingredient.name
+			qty, unit = RecipeItem.standardize_units(item.qty, item.unit)
+			groceries[name] = (groceries.get(name, (0, None))[0] + qty, unit)
 
 		context = {
 			'user_recipes': user_recipes,
@@ -43,6 +47,37 @@ class UserProfileView(LoginRequiredMixin, ListView):
 		}
 
 		return context
+
+
+class UserRecipesUpdate(UpdateView):
+	"""View to handle updating recipe date and time"""
+
+	model = UserRecipe
+	fields = ['meal_time', 'meal_date']
+	pk_url_kwarg = 'pk'
+	template_name = 'user/user_recipes_update.html'
+	success_url = reverse_lazy('my_recipes')
+
+
+class UserRecipesDelete(DeleteView):
+	"""View to delete recipe"""
+
+	model = UserRecipe
+	pk_url_kwarg = 'pk'
+	template_name = 'user/user_recipes_delete.html'
+	context_object_name = 'user_recipe'
+	success_url = reverse_lazy('my_recipes')
+
+
+class UserRecipesDisplay(ListView):
+	"""Generic class-based view that lists all recipes chosen by a user."""
+
+	model = UserRecipe
+	template_name = 'user/user_recipes.html'
+	context_object_name = 'user_recipes'
+
+	def get_queryset(self):
+		return UserRecipe.objects.filter(user=self.request.user)
 
 
 def create_recipe(request):
@@ -60,8 +95,8 @@ def create_recipe(request):
 @login_required
 def edit_recipe(request, recipe_name_slug):
 	recipe = Recipe.objects.get(slug=recipe_name_slug)
-	RecipeItemFormset = inlineformset_factory(Recipe, RecipeItem, fields=('qty','unit','ingredient'), extra=5)
-	InstructionFormset = inlineformset_factory(Recipe, Instruction, fields=('step_num', 'text'), extra=5)
+	RecipeItemFormset = inlineformset_factory(Recipe, RecipeItem, fields=('qty','unit','ingredient','description'), extra=10)
+	InstructionFormset = inlineformset_factory(Recipe, Instruction, fields=('step_num', 'text'), extra=8)
 
 	if request.method == 'POST':
 		recipeitem_formset = RecipeItemFormset(request.POST, instance=recipe)
@@ -108,7 +143,7 @@ def show_recipe(request, recipe_name_slug):
 @login_required
 def save_recipe(request, recipe_name_slug):
 	recipe = Recipe.objects.get(slug=recipe_name_slug)
-	UserRecipeFormset = inlineformset_factory(Recipe, UserRecipe, fields=('meal_time', 'meal_date'), extra=0)
+	UserRecipeFormset = inlineformset_factory(Recipe, UserRecipe, fields=('meal_time', 'meal_date'), extra=1)
 	userrecipe_formset = UserRecipeFormset(instance=recipe)
 
 	if request.method == 'POST':
