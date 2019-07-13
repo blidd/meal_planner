@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'recipes',
+    # 'users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
@@ -128,5 +129,8 @@ LOGIN_REDIRECT_URL = '/'
 
 # allows sent emails to be logged to the console
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# set custom user model
+# AUTH_USER_MODEL = 'users.CustomUser'
 
 

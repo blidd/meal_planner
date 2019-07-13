@@ -15,6 +15,9 @@ class RecipeItemForm(forms.ModelForm):
 	class Meta:
 		model = RecipeItem
 		fields = '__all__'
+		widgets = {
+			'description': forms.TextInput(attrs={'class': 'description'}),
+		}
 
 
 class UserRecipeForm(forms.ModelForm):

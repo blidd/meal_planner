@@ -2,53 +2,50 @@
 
 {% block content %}
 
-<body>
-	
-	<h1>{{ recipe.name }}</h1>
+<h1>{{ recipe.name }}</h1>
 
-	<div>
+<div>
 
-		<h2>Ingredients</h2>
+	<h2>Ingredients</h2>
 
-		{% if recipe_items %}
-		<ul>
-			{% for item in recipe_items %}
-			<li>{{ item.qty }} {{ item.unit }} of {{ item.ingredient.name }}</li>
-			{% endfor %}
-		</ul>
-		{% else %}
-		<strong>No ingredients.</strong>
-		{% endif %}
+	{% if recipe_items %}
+	<ul>
+		{% for item in recipe_items %}
+		<li>{{ item.qty }} {{ item.unit }} of {{ item.ingredient.name }}</li>
+		{% endfor %}
+	</ul>
+	{% else %}
+	<strong>No ingredients.</strong>
+	{% endif %}
 
-		<h2>Instructions</h2>
+	<h2>Instructions</h2>
 
-		{% if instructions %}
-		<ul>
-			{% for instruction in instructions %}
-			<li>
-				{{ instruction.step_num }}: {{ instruction.text }}
-			</li>
-			{% endfor %}
-		</ul>
-		{% else %}
-		<strong>No instructions.</strong>
-		{% endif %}
+	{% if instructions %}
+	<ul>
+		{% for instruction in instructions %}
+		<li>
+			{{ instruction.step_num }}: {{ instruction.text }}
+		</li>
+		{% endfor %}
+	</ul>
+	{% else %}
+	<strong>No instructions.</strong>
+	{% endif %}
 
-	</div>
+</div>
 
-	<div>
-		<a href="/recipes/{{ recipe.slug }}/edit_recipe">
-			<button type="submit">Edit this recipe</button>
-		</a>
+<div>
+	<a href="/recipes/{{ recipe.slug }}/edit_recipe">
+		<button type="submit">Edit this recipe</button>
+	</a>
 
-		<br />
-		<br />
+	<br />
+	<br />
 
-		<a href="/recipes/{{ recipe.slug }}/save_recipe">
-			<button type="submit">Add this recipe to your meal plan</button>
-		</a>
-	</div>
+	<a href="/recipes/{{ recipe.slug }}/save_recipe">
+		<button type="submit">Add this recipe to your meal plan</button>
+	</a>
+</div>
 
-</body>
 
 {% endblock %}

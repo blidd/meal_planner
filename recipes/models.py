@@ -37,6 +37,14 @@ class Recipe(models.Model):
 	name = models.CharField(max_length=50, unique=True)
 	likes = models.IntegerField(default=0)
 	cuisine = models.CharField(max_length=50, default='world')
+	servings = models.IntegerField(default=1)
+	ready_in = models.DurationField(default=datetime.timedelta(hours=1))
+	
+	cal = models.IntegerField(null=True)
+	# fat = models.IntegerField(null=True)
+	# carbs = models.IntegerField(null=True)
+	# protein = models.IntegerField(null=True)
+
 	slug = models.SlugField(unique=True)
 	
 	ingredients = models.ManyToManyField(
@@ -121,46 +129,6 @@ class RecipeItem(models.Model):
 
 	def __str__(self):
 		return "%d %s of %s" % (self.qty, self.unit, self.ingredient.name)
-
-	@staticmethod
-	def standardize_units(amt, unit):
-
-		std_amt = 0
-		std_unit = None
-		
-		# Standardizes to CUPS
-		if unit == 'TSP':
-			std_amt = amt / 48
-			std_unit = 'CUPS'
-		elif unit == 'TBSP':
-			std_amt = amt / 16
-			std_unit = 'CUPS'
-		elif unit == 'PINT':
-			std_amt = amt * 2
-			std_unit = 'CUPS'
-		elif unit == 'QRT':
-			std_amt = amt * 4
-			std_unit = 'CUPS'
-		elif unit == 'GAL':
-			std_amt = amt * 16
-			std_unit = 'CUPS'
-
-		# Standardizes to LBS
-		elif unit == 'OZ':
-			std_amt = amt / 16
-			std_unit = 'LBS'
-		elif unit == 'G':
-			std_amt = amt / 453.592
-			std_unit = 'LBS'
-		elif unit == 'KG':
-			std_amt = amt * 2.20462
-			std_unit = 'LBS'
-
-		else:
-			std_amt = amt
-			std_unit = unit
-
-		return std_amt, std_unit
 
 	class Meta:
 		verbose_name = 'Recipe item'

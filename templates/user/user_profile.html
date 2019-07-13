@@ -4,9 +4,17 @@
 
 <h1>My Profile</h1>
 
-<div>
+<h3>My Meal Plan</h3>
 
-	<h3>My Meal Plan</h3>
+<br />
+
+<a href="/users/my_profile/my_recipes" class="btn btn-primary">
+	Manage Meal Plan
+</a>
+
+<br /><br />
+
+<div class="row">
 
 	<ul>
 		{% for user_recipe in user_recipes %}
@@ -17,18 +25,15 @@
 		{% endfor %}
 	</ul>
 
-	<a href="/users/my_profile/my_recipes">
-		<button type="submit">Manage Meal Plan</button>
-	</a>
-
 </div>
 
-<div>
-	<h3>This week's groceries</h3>
+<h3>This week's groceries</h3>
 
-	{% for name, qty_and_unit in groceries.items %}
+<div class="row">
+	
+	{% for key, val in groceries.items %}
 	<ul>
-		<li>{{ qty_and_unit.0 }} {{ qty_and_unit.1 }} of {{ name }}</li>
+		<li>{{ key.0 }} ({{ val }} {{ key.1 }})</li>
 	</ul>
 	{% endfor %}
 
